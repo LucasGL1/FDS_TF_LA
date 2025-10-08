@@ -1,10 +1,10 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Aplicacao;
 
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.PedidoRepository;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.StatusPedido;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.PedidoRepository;
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
 
 @Component
 public class ConsultaStatusUC {
@@ -15,8 +15,13 @@ public class ConsultaStatusUC {
         this.pedidos = pedidos;
     }
 
-    public StatusPedido run(long idPedido) {
+    // O tipo de retorno agora é Pedido.Status
+    public Pedido.Status run(long idPedido) {
         Pedido pedido = pedidos.findById(idPedido);
-        return (pedido != null) ? pedido.getStatus() : null;
+        if (pedido != null) {
+            return pedido.getStatus();
+        } else {
+            return null;
+        }
     }
 }

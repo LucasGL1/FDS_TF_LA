@@ -1,23 +1,13 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Adaptadores.Apresentacao;
 
-import java.util.List;
-
+import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.*;
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido; // Importa a classe Pedido
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Produto;
+// O import do StatusPedido separado foi removido
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.CancelaPedidoUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.CarregaCardapioUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.ConsultaStatusUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.SubmetePedidoUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Produto;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.StatusPedido;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/pedidos")
@@ -40,7 +30,6 @@ public class PedidoController {
     // UC1: Carregar cardápio
     @GetMapping("/cardapio")
     public ResponseEntity<List<Produto>> getCardapio() {
-        // Corrigido para usar "Produto", conforme o modelo do projeto-base
         List<Produto> cardapio = carregaCardapioUC.run();
         return ResponseEntity.ok(cardapio);
     }
@@ -52,11 +41,15 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoAprovado);
     }
 
-    // UC3: Solicitar status de pedido
+    // UC3: Solicitar status de pedido - MÉTODO CORRIGIDO
     @GetMapping("/{id}/status")
-    public ResponseEntity<StatusPedido> getStatusPedido(@PathVariable long id) {
-        StatusPedido status = consultaStatusUC.run(id);
-        return (status != null) ? ResponseEntity.ok(status) : ResponseEntity.notFound().build();
+    public ResponseEntity<Pedido.Status> getStatusPedido(@PathVariable long id) {
+        // A variável 'status' e o tipo de retorno do ResponseEntity agora são "Pedido.Status"
+        Pedido.Status status = consultaStatusUC.run(id);
+        if (status != null) {
+            return ResponseEntity.ok(status);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // UC4: Cancelar pedido

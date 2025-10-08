@@ -5,15 +5,10 @@ import java.util.List;
 
 public class Pedido {
     public enum Status {
-        NOVO,
-        APROVADO,
-        PAGO,
-        AGUARDANDO,
-        PREPARACAO,
-        PRONTO,
-        TRANSPORTE,
-        ENTREGUE
+        NOVO, APROVADO, PAGO, AGUARDANDO, PREPARACAO, 
+        PRONTO, TRANSPORTE, ENTREGUE, CANCELADO
     }
+
     private long id;
     private Cliente cliente;
     private LocalDateTime dataHoraPagamento;
@@ -37,43 +32,19 @@ public class Pedido {
         this.valorCobrado = valorCobrado;
     }
 
-    public long getId() {
-        return id;
-    }
+    public long getId() { return id; }
+    public Cliente getCliente() { return cliente; }
+    public LocalDateTime getDataHoraPagamento() { return dataHoraPagamento; }
+    public List<ItemPedido> getItens() { return itens; }
+    public Status getStatus() { return status; }
+    public double getValor() { return valor; }
+    public double getImpostos() { return impostos; }
+    public double getDesconto() { return desconto; }
+    public double getValorCobrado() { return valorCobrado; }
 
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public LocalDateTime getDataHoraPagamento() {
-        return dataHoraPagamento;
-    }
-
-    public List<ItemPedido> getItens() {
-        return itens;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status){
-        this.status = status;
-    }
-
-    public double getValor() {
-        return valor;
-    }
-
-    public double getImpostos() {
-        return impostos;
-    }
-
-    public double getDesconto() {
-        return desconto;
-    }
-
-    public double getValorCobrado() {
-        return valorCobrado;
-    }
+    public void setStatus(Status status){ this.status = status; }
+    public void setValor(double valor) { this.valor = valor; }
+    public void setImpostos(double impostos) { this.impostos = impostos; }
+    public void setDesconto(double desconto) { this.desconto = desconto; }
+    public void setValorCobrado(double valorCobrado) { this.valorCobrado = valorCobrado; }
 }

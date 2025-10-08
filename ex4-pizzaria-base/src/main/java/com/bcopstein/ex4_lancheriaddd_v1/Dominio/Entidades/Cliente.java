@@ -1,18 +1,24 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades;
 
 public class Cliente {
+    private long id; 
     private String cpf;
     private String nome;
     private String celular;
     private String endereco;
     private String email;
 
-    public Cliente(String cpf, String nome, String celular, String endereco, String email) {
+    public Cliente(long id, String cpf, String nome, String celular, String endereco, String email) {
+        this.id = id;
         this.cpf = cpf;
         this.nome = nome;
         this.celular = celular;
         this.endereco = endereco;
         this.email = email;
+    }
+
+    public long getId() { 
+        return id; 
     }
 
     public String getCpf() { return cpf; }
