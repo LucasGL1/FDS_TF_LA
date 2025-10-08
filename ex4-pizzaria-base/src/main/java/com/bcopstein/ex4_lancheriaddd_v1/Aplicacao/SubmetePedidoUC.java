@@ -28,16 +28,13 @@ public class SubmetePedidoUC {
     public Pedido run(Pedido pedido) {
         boolean estoqueOk = servicoEstoque.verificaDisponibilidade(pedido);
         if (!estoqueOk) {
-            // Se não houver estoque, retorna o pedido sem aprovação
             return pedido;
         }
 
-        // Lógica de cálculo de custo SIMPLIFICADA E CORRIGIDA
         double subTotal = 0.0;
         for (ItemPedido item : pedido.getItens()) {
-            Produto produto = item.getItem(); // Pega o produto diretamente do ItemPedido
+            Produto produto = item.getItem(); 
             if (produto != null) {
-                // Preço do produto está em centavos, dividimos por 100
                 subTotal += item.getQuantidade() * (produto.getPreco() / 100.0);
             }
         }
@@ -48,7 +45,6 @@ public class SubmetePedidoUC {
         double valorImposto = servicoImpostos.calculaImposto(subTotalComDesconto);
         double custoFinal = subTotalComDesconto + valorImposto;
 
-        // Usa os setters que adicionamos ao Pedido.java
         pedido.setValor(subTotal);
         pedido.setDesconto(valorDesconto);
         pedido.setImpostos(valorImposto);

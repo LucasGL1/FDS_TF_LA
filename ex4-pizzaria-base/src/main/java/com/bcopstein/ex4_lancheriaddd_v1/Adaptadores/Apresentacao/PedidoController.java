@@ -1,9 +1,8 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Adaptadores.Apresentacao;
 
 import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.*;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido; // Importa a classe Pedido
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido; 
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Produto;
-// O import do StatusPedido separado foi removido
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

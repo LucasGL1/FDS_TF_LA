@@ -15,7 +15,6 @@ public class ConsultaStatusUC {
         this.pedidos = pedidos;
     }
 
-    // O tipo de retorno agora é Pedido.Status
     public Pedido.Status run(long idPedido) {
         Pedido pedido = pedidos.findById(idPedido);
         if (pedido != null) {
