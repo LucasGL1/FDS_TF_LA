@@ -1,17 +1,21 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Aplicacao;
 
-import java.util.Collections; // Linha corrigida
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.ProdutosRepository;
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Produto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import java.util.List;
 
 @Component
 public class CarregaCardapioUC {
-    public List<Produto> run() { 
-        //implementar
-        System.out.println("WARN: CarregaCardapioUC não implementado!");
-        return Collections.emptyList();
+    private ProdutosRepository produtos;
+
+    @Autowired
+    public CarregaCardapioUC(ProdutosRepository produtos) {
+        this.produtos = produtos;
+    }
+
+    public List<Produto> run() {
+        return produtos.findAll();
     }
 }
