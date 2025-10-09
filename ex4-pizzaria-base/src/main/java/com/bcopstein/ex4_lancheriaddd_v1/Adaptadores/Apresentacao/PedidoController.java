@@ -43,7 +43,6 @@ public class PedidoController {
     // UC3: Solicitar status de pedido - MÉTODO CORRIGIDO
     @GetMapping("/{id}/status")
     public ResponseEntity<Pedido.Status> getStatusPedido(@PathVariable long id) {
-        // A variável 'status' e o tipo de retorno do ResponseEntity agora são "Pedido.Status"
         Pedido.Status status = consultaStatusUC.run(id);
         if (status != null) {
             return ResponseEntity.ok(status);

@@ -50,11 +50,8 @@ public class PedidoRepositoryImpl implements PedidoRepository {
 
     @Override
     public List<Pedido> findPedidosRecentesByCliente(long idCliente, int dias) {
-        // LÓGICA DE FILTRAGEM IMPLEMENTADA
         return pedidos.stream()
-                // Filtra pelo ID do cliente
                 .filter(p -> p.getCliente() != null && p.getCliente().getId() == idCliente)
-                // Filtra por pedidos que têm data e que a data é recente
                 .filter(p -> p.getDataHoraPagamento() != null && p.getDataHoraPagamento().isAfter(LocalDateTime.now().minusDays(dias)))
                 .collect(Collectors.toList());
     }
