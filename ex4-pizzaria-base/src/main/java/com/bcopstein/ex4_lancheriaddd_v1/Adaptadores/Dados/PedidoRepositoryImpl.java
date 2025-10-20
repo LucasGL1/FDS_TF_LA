@@ -1,14 +1,16 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Adaptadores.Dados;
 
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.PedidoRepository;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Cliente;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime; // Import necessário para trabalhar com datas
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Repository;
+
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.PedidoRepository;
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Cliente;
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
 
 @Repository
 public class PedidoRepositoryImpl implements PedidoRepository {
@@ -17,11 +19,8 @@ public class PedidoRepositoryImpl implements PedidoRepository {
     public PedidoRepositoryImpl() {
         this.pedidos = new ArrayList<>();
         
-        // --- DADOS DE EXEMPLO PARA TESTAR A REGRA DE DESCONTO ---
-        // Cliente de exemplo que terá um histórico de pedidos
         Cliente clienteExemplo = new Cliente(1L, "123.456.789-00", "Cliente Frequente", "51999998888", "Rua dos Testes, 123", "cliente@teste.com");
 
-        // 4 pedidos antigos para este cliente, feitos nos últimos 5 dias
         pedidos.add(new Pedido(1L, clienteExemplo, LocalDateTime.now().minusDays(5), new ArrayList<>(), Pedido.Status.ENTREGUE, 50, 5, 0, 55));
         pedidos.add(new Pedido(2L, clienteExemplo, LocalDateTime.now().minusDays(4), new ArrayList<>(), Pedido.Status.ENTREGUE, 60, 6, 0, 66));
         pedidos.add(new Pedido(3L, clienteExemplo, LocalDateTime.now().minusDays(3), new ArrayList<>(), Pedido.Status.ENTREGUE, 40, 4, 0, 44));
@@ -54,5 +53,15 @@ public class PedidoRepositoryImpl implements PedidoRepository {
                 .filter(p -> p.getCliente() != null && p.getCliente().getId() == idCliente)
                 .filter(p -> p.getDataHoraPagamento() != null && p.getDataHoraPagamento().isAfter(LocalDateTime.now().minusDays(dias)))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Pedido> findEntreguesByData(LocalDate dataInicio, LocalDate dataFim) {
+        return pedidos.stream()
+            .filter(p -> p.getStatus() == Pedido.Status.ENTREGUE)
+            .filter(p -> p.getDataHoraPagamento() != null &&
+                         !p.getDataHoraPagamento().toLocalDate().isBefore(dataInicio) &&
+                         !p.getDataHoraPagamento().toLocalDate().isAfter(dataFim))
+            .collect(Collectors.toList());
     }
 }

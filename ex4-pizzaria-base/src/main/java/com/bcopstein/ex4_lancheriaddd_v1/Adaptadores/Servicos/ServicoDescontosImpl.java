@@ -17,11 +17,10 @@ public class ServicoDescontosImpl implements ServicoDescontos {
 
     @Override
     public double calculaDesconto(long idCliente) {
-        // Desconto de 7% para clientes com mais de 3 pedidos nos últimos 20 dias
         int pedidosRecentes = pedidoRepository.findPedidosRecentesByCliente(idCliente, 20).size();
         if (pedidosRecentes > 3) {
-            return 0.07; // 7%
+            return 0.07; 
         }
-        return 0.0; // Sem desconto
+        return 0.0; 
     }
 }   

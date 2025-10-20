@@ -1,4 +1,3 @@
-// O package deve incluir "Adaptadores"
 package com.bcopstein.ex4_lancheriaddd_v1.Adaptadores.Servicos; 
 
 import org.springframework.stereotype.Component;
