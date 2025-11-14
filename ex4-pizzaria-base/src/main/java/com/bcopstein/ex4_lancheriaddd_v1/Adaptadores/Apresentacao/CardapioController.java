@@ -1,8 +1,6 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Adaptadores.Apresentacao;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +13,7 @@ import com.bcopstein.ex4_lancheriaddd_v1.Adaptadores.Apresentacao.Presenters.Car
 import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.RecuperaListaCardapiosUC;
 import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.RecuperarCardapioUC;
 import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.Responses.CardapioResponse;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Produto;
+// Import removido (não precisamos mais de Produto ou HashSet aqui)
 
 @RestController
 @RequestMapping("/cardapio")
@@ -33,15 +31,9 @@ public class CardapioController {
     @CrossOrigin("*")
     public CardapioPresenter recuperaCardapio(@PathVariable(value="id")long id){
         CardapioResponse cardapioResponse = recuperaCardapioUC.run(id);
-        Set<Long> conjIdSugestoes = new HashSet<>(cardapioResponse.getSugestoesDoChef().stream()
-            .map(produto->produto.getId())
-            .toList());
-        CardapioPresenter cardapioPresenter = new CardapioPresenter(cardapioResponse.getCardapio().getTitulo());
-        for(Produto produto:cardapioResponse.getCardapio().getProdutos()){
-            boolean sugestao = conjIdSugestoes.contains(produto.getId());
-            cardapioPresenter.insereItem(produto.getId(), produto.getDescricao(), produto.getPreco(), sugestao);
-        }
-        return cardapioPresenter;
+        
+        
+        return new CardapioPresenter(cardapioResponse);
     }
 
     @GetMapping("/lista")
