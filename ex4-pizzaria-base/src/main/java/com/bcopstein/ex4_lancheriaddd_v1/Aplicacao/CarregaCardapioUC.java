@@ -1,6 +1,6 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Aplicacao;
 
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.Responses.ProdutoCardapioDTO; // Importa o DTO
+import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.Responses.ProdutoCardapioDTO;
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.ProdutosRepository;
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Produto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +12,23 @@ import java.util.stream.Collectors;
 @Component
 public class CarregaCardapioUC {
     private ProdutosRepository produtos;
+    private ConfiguradorCardapio configurador; // <-- NOVA DEPENDÊNCIA
 
     @Autowired
-    public CarregaCardapioUC(ProdutosRepository produtos) {
+    public CarregaCardapioUC(ProdutosRepository produtos, ConfiguradorCardapio configurador) { // <-- DEPENDÊNCIA ADICIONADA
         this.produtos = produtos;
+        this.configurador = configurador; // <-- DEPENDÊNCIA ADICIONADA
     }
 
-    // O método agora retorna uma lista do nosso DTO
     public List<ProdutoCardapioDTO> run() {
-        long cardapioVigenteId = 1L; // Conforme UC1
+        // LÓGICA ATUALIZADA
+        // 1. Pega o ID do cardápio que o "master" definiu
+        long cardapioVigenteId = configurador.getIdCardapioAtivo();
         
-        // 1. Busca as Entidades de Produto (com receita) do banco
+        // 2. Busca as Entidades de Produto (com receita) do banco
         List<Produto> produtosEntidade = produtos.recuperaProdutosCardapio(cardapioVigenteId);
 
-        // 2. Converte a lista de Entidades para uma lista de DTOs (sem receita)
+        // 3. Converte a lista de Entidades para uma lista de DTOs (sem receita)
         return produtosEntidade.stream()
                 .map(produto -> new ProdutoCardapioDTO(
                         produto.getId(),

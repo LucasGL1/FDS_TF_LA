@@ -35,6 +35,8 @@ public class Pedido {
         this.valorCobrado = valorCobrado;
     }
 
+    // --- GETTERS ---
+    // (Garantindo que todos existam)
     public long getId() { return id; }
     public Cliente getCliente() { return cliente; }
     public LocalDateTime getDataHoraPagamento() { return dataHoraPagamento; }
@@ -43,8 +45,10 @@ public class Pedido {
     public double getValor() { return valor; }
     public double getImpostos() { return impostos; }
     public double getDesconto() { return desconto; }
+    // MÉTODO QUE ESTAVA FALTANDO
     public double getValorCobrado() { return valorCobrado; }
 
+    // --- SETTERS ---
     public void setStatus(Status status){ this.status = status; }
     public void setValor(double valor) { this.valor = valor; }
     public void setImpostos(double impostos) { this.impostos = impostos; }

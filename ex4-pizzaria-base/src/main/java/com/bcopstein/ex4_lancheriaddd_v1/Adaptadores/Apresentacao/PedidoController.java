@@ -6,6 +6,7 @@ import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.Responses.ProdutoCardapioDTO;
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus; // NOVO IMPORT
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/pedidos")
 public class PedidoController {
 
+    // ... (UCs antigos)
     private final CarregaCardapioUC carregaCardapioUC;
     private final SubmetePedidoUC submetePedidoUC;
     private final ConsultaStatusUC consultaStatusUC;
@@ -23,12 +25,16 @@ public class PedidoController {
     private final PagaPedidoUC pagaPedidoUC;
     private final ListaPedidosEntreguesUC listaPedidosEntreguesUC;
     private final ListaPedidosUC listaPedidosUC; 
+    
+    // NOVA DEPENDÊNCIA (UC Master)
+    private final DefineCardapioAtivoUC defineCardapioAtivoUC;
 
     @Autowired
     public PedidoController(CarregaCardapioUC carregaCardapioUC, SubmetePedidoUC submetePedidoUC, 
                             ConsultaStatusUC consultaStatusUC, CancelaPedidoUC cancelaPedidoUC,
                             PagaPedidoUC pagaPedidoUC, ListaPedidosEntreguesUC listaPedidosEntreguesUC,
-                            ListaPedidosUC listaPedidosUC) {
+                            ListaPedidosUC listaPedidosUC,
+                            DefineCardapioAtivoUC defineCardapioAtivoUC) { // DEPENDÊNCIA ADICIONADA
         this.carregaCardapioUC = carregaCardapioUC;
         this.submetePedidoUC = submetePedidoUC;
         this.consultaStatusUC = consultaStatusUC;
@@ -36,8 +42,10 @@ public class PedidoController {
         this.pagaPedidoUC = pagaPedidoUC;
         this.listaPedidosEntreguesUC = listaPedidosEntreguesUC;
         this.listaPedidosUC = listaPedidosUC;
+        this.defineCardapioAtivoUC = defineCardapioAtivoUC; // DEPENDÊNCIA ADICIONADA
     }
 
+    // --- (Endpoints antigos UC1, UC2, etc. permanecem iguais) ---
     @GetMapping()
     public ResponseEntity<List<Pedido>> getTodosPedidos() {
         return ResponseEntity.ok(listaPedidosUC.run());
@@ -47,30 +55,24 @@ public class PedidoController {
     public ResponseEntity<List<ProdutoCardapioDTO>> getCardapio() {
         return ResponseEntity.ok(carregaCardapioUC.run());
     }
-
+    
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> submetePedido(@RequestBody Pedido pedido) {
         return ResponseEntity.ok(submetePedidoUC.run(pedido));
     }
 
-    // MÉTODO ATUALIZADO (SEM IF)
     @GetMapping("/{id}/status")
     public ResponseEntity<Pedido.Status> getStatusPedido(@PathVariable long id) {
-        // A exceção 404 será lançada pelo UC se o pedido não for encontrado
         return ResponseEntity.ok(consultaStatusUC.run(id));
     }
 
-    // MÉTODO ATUALIZADO (SEM IF)
     @PostMapping("/{id}/cancelar")
     public ResponseEntity<PedidoResponseDTO> cancelarPedido(@PathVariable long id) {
-        // A exceção 400 ou 404 será lançada pelo UC
         return ResponseEntity.ok(cancelaPedidoUC.run(id)); 
     }
 
-    // MÉTODO ATUALIZADO (SEM IF)
     @PostMapping("/{id}/pagar")
     public ResponseEntity<PedidoResponseDTO> pagarPedido(@PathVariable long id) {
-        // A exceção 400 ou 404 será lançada pelo UC
         return ResponseEntity.ok(pagaPedidoUC.run(id));
     }
     
@@ -79,5 +81,13 @@ public class PedidoController {
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
         return ResponseEntity.ok(listaPedidosEntreguesUC.run(dataInicio, dataFim));
+    }
+    
+    // --- NOVO ENDPOINT (UC Master) ---
+    @PostMapping("/cardapio/ativar/{id}")
+    @ResponseStatus(HttpStatus.OK) // Retorna 200 OK sem corpo
+    public void defineCardapioAtivo(@PathVariable long id) {
+        // Este endpoint já está protegido para "ADMIN" pelo SecurityConfig
+        defineCardapioAtivoUC.run(id);
     }
 }
