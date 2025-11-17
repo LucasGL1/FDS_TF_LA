@@ -1,12 +1,14 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades;
 
 public class Cliente {
-    private long id; 
+    private long id;
     private String cpf;
     private String nome;
     private String celular;
     private String endereco;
     private String email;
+
+    public Cliente() {} // Construtor vazio
 
     public Cliente(long id, String cpf, String nome, String celular, String endereco, String email) {
         this.id = id;
@@ -17,13 +19,16 @@ public class Cliente {
         this.email = email;
     }
 
-    public long getId() { 
-        return id; 
-    }
-
+    // Getters
+    public long getId() { return id; }
     public String getCpf() { return cpf; }
     public String getNome() { return nome; }
     public String getCelular() { return celular; }
     public String getEndereco() { return endereco; }
     public String getEmail() { return email; }
+
+    // SETTER ADICIONADO
+    public void setId(long id) {
+        this.id = id;
+    }
 }

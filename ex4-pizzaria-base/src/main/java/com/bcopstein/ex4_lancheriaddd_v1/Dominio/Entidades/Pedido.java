@@ -45,14 +45,13 @@ public class Pedido {
     public double getDesconto() { return desconto; }
     public double getValorCobrado() { return valorCobrado; }
 
-
     public void setStatus(Status status){ this.status = status; }
     public void setValor(double valor) { this.valor = valor; }
     public void setImpostos(double impostos) { this.impostos = impostos; }
     public void setDesconto(double desconto) { this.desconto = desconto; }
     public void setValorCobrado(double valorCobrado) { this.valorCobrado = valorCobrado; }
-    
-    public void setDataHoraPagamento(LocalDateTime dataHoraPagamento) {
-        this.dataHoraPagamento = dataHoraPagamento;
-    }
+    public void setDataHoraPagamento(LocalDateTime dataHoraPagamento) { this.dataHoraPagamento = dataHoraPagamento; }
+    public void setItens(List<ItemPedido> itens) { this.itens = itens; }
+    public void setId(long id) { this.id = id; }
+    public void setCliente(Cliente cliente) { this.cliente = cliente; }
 }

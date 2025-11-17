@@ -1,28 +1,16 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Adaptadores.Apresentacao;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.*;
+import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.Responses.PedidoResponseDTO;
+import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.Responses.ProdutoCardapioDTO; 
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.CancelaPedidoUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.CarregaCardapioUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.ConsultaStatusUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.ListaPedidosEntreguesUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.ListaPedidosUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.PagaPedidoUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.SubmetePedidoUC;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Produto;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/pedidos")
@@ -32,7 +20,6 @@ public class PedidoController {
     private final SubmetePedidoUC submetePedidoUC;
     private final ConsultaStatusUC consultaStatusUC;
     private final CancelaPedidoUC cancelaPedidoUC;
-
     private final PagaPedidoUC pagaPedidoUC;
     private final ListaPedidosEntreguesUC listaPedidosEntreguesUC;
     private final ListaPedidosUC listaPedidosUC; 
@@ -53,45 +40,44 @@ public class PedidoController {
 
     @GetMapping()
     public ResponseEntity<List<Pedido>> getTodosPedidos() {
-        List<Pedido> pedidos = listaPedidosUC.run();
-        return ResponseEntity.ok(pedidos);
+        return ResponseEntity.ok(listaPedidosUC.run());
     }
 
     @GetMapping("/cardapio")
-    public ResponseEntity<List<Produto>> getCardapio() {
-        List<Produto> cardapio = carregaCardapioUC.run();
-        return ResponseEntity.ok(cardapio);
+    public ResponseEntity<List<ProdutoCardapioDTO>> getCardapio() {
+        return ResponseEntity.ok(carregaCardapioUC.run());
     }
 
     @PostMapping
-    public ResponseEntity<Pedido> submetePedido(@RequestBody Pedido pedido) {
-        Pedido pedidoAprovado = submetePedidoUC.run(pedido);
-        return ResponseEntity.ok(pedidoAprovado);
+    public ResponseEntity<PedidoResponseDTO> submetePedido(@RequestBody Pedido pedido) {
+        return ResponseEntity.ok(submetePedidoUC.run(pedido));
     }
 
+    // MÉTODO ATUALIZADO (SEM IF)
     @GetMapping("/{id}/status")
     public ResponseEntity<Pedido.Status> getStatusPedido(@PathVariable long id) {
-        Pedido.Status status = consultaStatusUC.run(id);
-        return (status != null) ? ResponseEntity.ok(status) : ResponseEntity.notFound().build();
+        // A exceção 404 será lançada pelo UC se o pedido não for encontrado
+        return ResponseEntity.ok(consultaStatusUC.run(id));
     }
 
+    // MÉTODO ATUALIZADO (SEM IF)
     @PostMapping("/{id}/cancelar")
-    public ResponseEntity<Pedido> cancelarPedido(@PathVariable long id) {
-        Pedido pedidoCancelado = cancelaPedidoUC.run(id);
-        return (pedidoCancelado != null) ? ResponseEntity.ok(pedidoCancelado) : ResponseEntity.badRequest().build();
+    public ResponseEntity<PedidoResponseDTO> cancelarPedido(@PathVariable long id) {
+        // A exceção 400 ou 404 será lançada pelo UC
+        return ResponseEntity.ok(cancelaPedidoUC.run(id)); 
     }
 
+    // MÉTODO ATUALIZADO (SEM IF)
     @PostMapping("/{id}/pagar")
-    public ResponseEntity<Pedido> pagarPedido(@PathVariable long id) {
-        Pedido pedido = pagaPedidoUC.run(id);
-        return (pedido != null) ? ResponseEntity.ok(pedido) : ResponseEntity.badRequest().build();
+    public ResponseEntity<PedidoResponseDTO> pagarPedido(@PathVariable long id) {
+        // A exceção 400 ou 404 será lançada pelo UC
+        return ResponseEntity.ok(pagaPedidoUC.run(id));
     }
     
     @GetMapping("/entregues")
-    public ResponseEntity<List<Pedido>> getPedidosEntregues(
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidosEntregues(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
-        List<Pedido> pedidos = listaPedidosEntreguesUC.run(dataInicio, dataFim);
-        return ResponseEntity.ok(pedidos);
+        return ResponseEntity.ok(listaPedidosEntreguesUC.run(dataInicio, dataFim));
     }
 }

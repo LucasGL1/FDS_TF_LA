@@ -1,12 +1,10 @@
-//OK
-
 package com.bcopstein.ex4_lancheriaddd_v1.Aplicacao;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.PedidoRepository;
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Exceptions.PedidoNaoEncontradoException; // NOVO IMPORT
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ConsultaStatusUC {
@@ -19,10 +17,10 @@ public class ConsultaStatusUC {
 
     public Pedido.Status run(long idPedido) {
         Pedido pedido = pedidos.findById(idPedido);
-        if (pedido != null) {
-            return pedido.getStatus();
-        } else {
-            return null;
+        // Lógica atualizada: lança exceção se for nulo
+        if (pedido == null) {
+            throw new PedidoNaoEncontradoException("Pedido " + idPedido + " não encontrado.");
         }
+        return pedido.getStatus();
     }
 }
