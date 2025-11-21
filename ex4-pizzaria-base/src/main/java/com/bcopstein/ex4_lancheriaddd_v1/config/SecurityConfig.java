@@ -14,9 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Não precisamos mais do UserDetailsService em memória,
-    // o Spring vai injetar e usar o CustomUserDetailsService automaticamente.
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -36,10 +33,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/h2/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/h2/**").permitAll()
 
-                // REGRA NOVA (UC Master): Apenas quem tem a role "ADMIN" pode definir o cardápio
+                // REGRA 4 (UC Master Cardápio): Apenas ADMIN
                 .requestMatchers(HttpMethod.POST, "/pedidos/cardapio/ativar/**").hasRole("ADMIN")
+
+                // REGRA NOVA (UC Master Desconto): Apenas ADMIN
+                .requestMatchers(HttpMethod.POST, "/pedidos/desconto/ativar").hasRole("ADMIN")
                 
-                // REGRA 4: Exige autenticação (qualquer usuário logado) para todo o resto
                 .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults())

@@ -6,7 +6,7 @@ import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.Responses.ProdutoCardapioDTO;
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus; // NOVO IMPORT
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,6 @@ import java.util.List;
 @RequestMapping("/pedidos")
 public class PedidoController {
 
-    // ... (UCs antigos)
     private final CarregaCardapioUC carregaCardapioUC;
     private final SubmetePedidoUC submetePedidoUC;
     private final ConsultaStatusUC consultaStatusUC;
@@ -26,7 +25,6 @@ public class PedidoController {
     private final ListaPedidosEntreguesUC listaPedidosEntreguesUC;
     private final ListaPedidosUC listaPedidosUC; 
     
-    // NOVA DEPENDÊNCIA (UC Master)
     private final DefineCardapioAtivoUC defineCardapioAtivoUC;
 
     @Autowired
@@ -34,7 +32,7 @@ public class PedidoController {
                             ConsultaStatusUC consultaStatusUC, CancelaPedidoUC cancelaPedidoUC,
                             PagaPedidoUC pagaPedidoUC, ListaPedidosEntreguesUC listaPedidosEntreguesUC,
                             ListaPedidosUC listaPedidosUC,
-                            DefineCardapioAtivoUC defineCardapioAtivoUC) { // DEPENDÊNCIA ADICIONADA
+                            DefineCardapioAtivoUC defineCardapioAtivoUC) {
         this.carregaCardapioUC = carregaCardapioUC;
         this.submetePedidoUC = submetePedidoUC;
         this.consultaStatusUC = consultaStatusUC;
@@ -42,10 +40,9 @@ public class PedidoController {
         this.pagaPedidoUC = pagaPedidoUC;
         this.listaPedidosEntreguesUC = listaPedidosEntreguesUC;
         this.listaPedidosUC = listaPedidosUC;
-        this.defineCardapioAtivoUC = defineCardapioAtivoUC; // DEPENDÊNCIA ADICIONADA
+        this.defineCardapioAtivoUC = defineCardapioAtivoUC; 
     }
 
-    // --- (Endpoints antigos UC1, UC2, etc. permanecem iguais) ---
     @GetMapping()
     public ResponseEntity<List<Pedido>> getTodosPedidos() {
         return ResponseEntity.ok(listaPedidosUC.run());
@@ -83,11 +80,10 @@ public class PedidoController {
         return ResponseEntity.ok(listaPedidosEntreguesUC.run(dataInicio, dataFim));
     }
     
-    // --- NOVO ENDPOINT (UC Master) ---
+ 
     @PostMapping("/cardapio/ativar/{id}")
-    @ResponseStatus(HttpStatus.OK) // Retorna 200 OK sem corpo
+    @ResponseStatus(HttpStatus.OK) 
     public void defineCardapioAtivo(@PathVariable long id) {
-        // Este endpoint já está protegido para "ADMIN" pelo SecurityConfig
         defineCardapioAtivoUC.run(id);
     }
 }

@@ -1,6 +1,5 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Aplicacao;
 
-// Importa os novos DTOs
 import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.Responses.PedidoResponseDTO;
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.ClienteRepository;
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.PedidoRepository;
@@ -36,36 +35,32 @@ public class SubmetePedidoUC {
         this.produtosRepository = produtosRepository;
     }
 
-    // O método agora retorna o PedidoResponseDTO
     public PedidoResponseDTO run(Pedido pedido) {
-        // 1. VERIFICA ESTOQUE (FAKE)
         boolean estoqueOk = servicoEstoque.verificaDisponibilidade(pedido);
         if (!estoqueOk) {
-            return null; // Ou uma DTO de erro
+            return null; 
         }
 
-        // 2. "RECHEAR" O PEDIDO COM DADOS DO BANCO
         Cliente clienteCompleto = clienteRepository.findById(pedido.getCliente().getId());
         pedido.setCliente(clienteCompleto);
-
         for (ItemPedido item : pedido.getItens()) {
             Produto produtoCompleto = produtosRepository.recuperaProdutoPorid(item.getItem().getId());
             item.setItem(produtoCompleto);
         }
 
-        // 3. CALCULAR CUSTOS
         double subTotal = 0.0;
         for (ItemPedido item : pedido.getItens()) {
             subTotal += item.getQuantidade() * (item.getItem().getPreco() / 100.0);
         }
         
-        double percentualDesconto = servicoDescontos.calculaDesconto(pedido.getCliente().getId());
+        double percentualDesconto = servicoDescontos.getPercentualDesconto(pedido);
+        
         double valorDesconto = subTotal * percentualDesconto;
         double subTotalComDesconto = subTotal - valorDesconto;
         double valorImposto = servicoImpostos.calculaImposto(subTotalComDesconto);
         double custoFinal = subTotalComDesconto + valorImposto;
 
-        // 4. ATUALIZAR E SALVAR O PEDIDO
+        // 4. ATUALIZAR E SALVAR
         pedido.setValor(subTotal);
         pedido.setDesconto(valorDesconto);
         pedido.setImpostos(valorImposto);
@@ -74,7 +69,6 @@ public class SubmetePedidoUC {
         
         Pedido pedidoSalvo = pedidos.save(pedido);
         
-        // 5. Retorna o DTO formatado
         return new PedidoResponseDTO(pedidoSalvo); 
     }
 }

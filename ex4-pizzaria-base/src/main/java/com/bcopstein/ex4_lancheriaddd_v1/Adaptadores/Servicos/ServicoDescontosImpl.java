@@ -1,26 +1,37 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Adaptadores.Servicos;
 
+import com.bcopstein.ex4_lancheriaddd_v1.Aplicacao.ConfiguradorDesconto;
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades.Pedido;
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Servicos.ServicoDescontos;
+import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Servicos.Descontos.IEstrategiaDesconto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import java.util.List;
 
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.PedidoRepository;
-import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Servicos.ServicoDescontos;
-
-@Component
+@Component 
 public class ServicoDescontosImpl implements ServicoDescontos {
-    private PedidoRepository pedidoRepository;
+
+    private List<IEstrategiaDesconto> estrategias;
+    private ConfiguradorDesconto configurador;
 
     @Autowired
-    public ServicoDescontosImpl(PedidoRepository pedidoRepository) {
-        this.pedidoRepository = pedidoRepository;
+    public ServicoDescontosImpl(List<IEstrategiaDesconto> estrategias, ConfiguradorDesconto configurador) {
+        this.estrategias = estrategias;
+        this.configurador = configurador;
     }
 
+
     @Override
-    public double calculaDesconto(long idCliente) {
-        int pedidosRecentes = pedidoRepository.findPedidosRecentesByCliente(idCliente, 20).size();
-        if (pedidosRecentes > 3) {
-            return 0.07; 
+    public double getPercentualDesconto(Pedido pedido) {
+        String nomeEstrategiaAtiva = configurador.getNomeEstrategiaAtiva();
+
+        for (IEstrategiaDesconto estrategia : estrategias) {
+            if (estrategia.getNomeEstrategia().equalsIgnoreCase(nomeEstrategiaAtiva)) {
+                return estrategia.getPercentualDesconto(pedido);
+            }
         }
-        return 0.0; 
+        
+        return 0.0;
     }
-}   
+}

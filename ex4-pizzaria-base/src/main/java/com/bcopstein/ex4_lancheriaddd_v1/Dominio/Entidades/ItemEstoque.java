@@ -1,15 +1,28 @@
 package com.bcopstein.ex4_lancheriaddd_v1.Dominio.Entidades;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
+@Entity 
+@Table(name = "itensEstoque") 
+@Data 
+@NoArgsConstructor 
+@AllArgsConstructor 
 public class ItemEstoque {
-    private Ingrediente ingrediente;
+    
+    @Id 
+    private long id;
+    
     private int quantidade;
-
-    public ItemEstoque(Ingrediente ingrediente, int quantidade) {
-        this.ingrediente = ingrediente;
-        this.quantidade = quantidade;
-    }
-
-    public Ingrediente getIngrediente() { return ingrediente; }
-    public int getQuantidade() { return quantidade; }
-    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
+    
+    @OneToOne
+    private Ingrediente ingrediente;
 }
