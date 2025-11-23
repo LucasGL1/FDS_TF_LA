@@ -20,7 +20,6 @@ public class ClienteController {
         this.registraClienteUC = registraClienteUC;
     }
 
-    // Endpoint público para registrar novos clientes
     @PostMapping("/registrar")
     public ResponseEntity<Cliente> registraNovoCliente(@RequestBody Cliente novoCliente) {
         Cliente clienteSalvo = registraClienteUC.run(novoCliente);

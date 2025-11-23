@@ -26,13 +26,16 @@ public class PedidoController {
     private final ListaPedidosUC listaPedidosUC; 
     
     private final DefineCardapioAtivoUC defineCardapioAtivoUC;
+    // NOVA DEPENDÊNCIA ADICIONADA AQUI
+    private final DefineEstrategiaDescontoUC defineEstrategiaDescontoUC;
 
     @Autowired
     public PedidoController(CarregaCardapioUC carregaCardapioUC, SubmetePedidoUC submetePedidoUC, 
                             ConsultaStatusUC consultaStatusUC, CancelaPedidoUC cancelaPedidoUC,
                             PagaPedidoUC pagaPedidoUC, ListaPedidosEntreguesUC listaPedidosEntreguesUC,
                             ListaPedidosUC listaPedidosUC,
-                            DefineCardapioAtivoUC defineCardapioAtivoUC) {
+                            DefineCardapioAtivoUC defineCardapioAtivoUC,
+                            DefineEstrategiaDescontoUC defineEstrategiaDescontoUC) { // DEPENDÊNCIA NO CONSTRUTOR
         this.carregaCardapioUC = carregaCardapioUC;
         this.submetePedidoUC = submetePedidoUC;
         this.consultaStatusUC = consultaStatusUC;
@@ -41,6 +44,7 @@ public class PedidoController {
         this.listaPedidosEntreguesUC = listaPedidosEntreguesUC;
         this.listaPedidosUC = listaPedidosUC;
         this.defineCardapioAtivoUC = defineCardapioAtivoUC; 
+        this.defineEstrategiaDescontoUC = defineEstrategiaDescontoUC; // ATRIBUIÇÃO
     }
 
     @GetMapping()
@@ -80,10 +84,16 @@ public class PedidoController {
         return ResponseEntity.ok(listaPedidosEntreguesUC.run(dataInicio, dataFim));
     }
     
- 
     @PostMapping("/cardapio/ativar/{id}")
     @ResponseStatus(HttpStatus.OK) 
     public void defineCardapioAtivo(@PathVariable long id) {
         defineCardapioAtivoUC.run(id);
+    }
+
+    // --- O ENDPOINT QUE FALTAVA ---
+    @PostMapping("/desconto/ativar")
+    @ResponseStatus(HttpStatus.OK)
+    public void defineEstrategiaDesconto(@RequestParam String nomeEstrategia) {
+        defineEstrategiaDescontoUC.run(nomeEstrategia);
     }
 }

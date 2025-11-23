@@ -14,8 +14,6 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyInt;
 
 public class EstrategiaClienteFrequenteTest {
 

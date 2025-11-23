@@ -6,13 +6,18 @@ spring:
     password:
   sql:
     init:
-      mode: always   # executa schema.sql no boot
+      mode: always
     schema-locations: classpath:schema.sql
     data-locations: classpath:data.sql
+  jpa:
+    hibernate:
+      ddl-auto: none # <--- ISSO É O QUE FALTAVA! (Impede o Hibernate de apagar seus dados)
+    show-sql: true   # Opcional: Mostra os SQLs no log para ajudar a debugar
   h2:
     console:
       enabled: true
       path: /h2
+
 logging:
   level:
     org:
@@ -20,6 +25,7 @@ logging:
         jdbc: DEBUG
     com:
       bcopstein: DEBUG
+
 application:
   name: ex4-lancheriaddd-v1
 server:

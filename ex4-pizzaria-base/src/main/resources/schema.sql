@@ -1,4 +1,16 @@
-create table if not exists clientes(
+drop table if exists item_pedido;
+drop table if exists pedidos;
+drop table if exists cardapio_produto;
+drop table if exists cardapios;
+drop table if exists produto_receita;
+drop table if exists produtos;
+drop table if exists receita_ingrediente;
+drop table if exists receitas;
+drop table if exists itensEstoque;
+drop table if exists ingredientes;
+drop table if exists clientes;
+
+create table clientes(
     id bigint not null primary key,
     cpf varchar(15) not null,
     nome varchar(100) not null,
@@ -6,27 +18,29 @@ create table if not exists clientes(
     endereco varchar(255) not null,
     email varchar(255) not null,
     senha varchar(255) not null,
-    role varchar(50) not null -- <-- ADICIONE ESTA LINHA
+    role varchar(50) not null
 );
 
-create table if not exists ingredientes (
+create table ingredientes (
     id bigint primary key,
     descricao varchar(255) not null
 );
 
-create table if not exists itensEstoque(
+-- (Mantenha as outras tabelas iguais, altere apenas esta)
+
+create table itens_estoque(  -- <--- MUDOU O NOME
     id bigint primary key,
     quantidade int,
     ingrediente_id bigint,
     foreign key (ingrediente_id) references ingredientes(id)
 );
 
-create table if not exists receitas (
+create table receitas (
     id bigint primary key,
     titulo varchar(255) not null
 );
 
-create table if not exists receita_ingrediente (
+create table receita_ingrediente (
     receita_id bigint not null,
     ingrediente_id bigint not null,
     primary key (receita_id, ingrediente_id),
@@ -34,26 +48,21 @@ create table if not exists receita_ingrediente (
     foreign key (ingrediente_id) references ingredientes(id)
 );
 
-create table if not exists produtos (
+-- TABELA PRODUTOS COM RECEITA_ID
+create table produtos (
     id bigint primary key,
     descricao varchar(255) not null,
-    preco bigint
-);
-
-create table if not exists produto_receita (
-    produto_id bigint not null,
-    receita_id bigint not null,
-    primary key (produto_id,receita_id),
-    foreign key (produto_id) references produtos(id),
+    preco bigint,
+    receita_id bigint, 
     foreign key (receita_id) references receitas(id)
 );
 
-create table if not exists cardapios (
+create table cardapios (
     id bigint primary key,
     titulo varchar(255) not null
 );
 
-create table if not exists cardapio_produto (
+create table cardapio_produto (
     cardapio_id bigint not null,
     produto_id bigint not null,
     primary key (cardapio_id,produto_id),
@@ -61,8 +70,7 @@ create table if not exists cardapio_produto (
     foreign key (produto_id) references produtos(id)
 );
 
--- Tabela PEDIDOS (NOVA)
-create table if not exists pedidos (
+create table pedidos (
     id bigint primary key,
     cliente_id bigint not null,
     data_hora_pagamento timestamp,
@@ -74,8 +82,7 @@ create table if not exists pedidos (
     foreign key (cliente_id) references clientes(id)
 );
 
--- Tabela ITEM_PEDIDO (NOVA)
-create table if not exists item_pedido (
+create table item_pedido (
     id bigint auto_increment primary key,
     pedido_id bigint not null,
     produto_id bigint not null,

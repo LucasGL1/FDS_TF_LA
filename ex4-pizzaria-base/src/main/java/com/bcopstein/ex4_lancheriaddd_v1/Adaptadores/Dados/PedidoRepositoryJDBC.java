@@ -1,3 +1,4 @@
+// ... (Imports iguais)
 package com.bcopstein.ex4_lancheriaddd_v1.Adaptadores.Dados;
 
 import com.bcopstein.ex4_lancheriaddd_v1.Dominio.Dados.ClienteRepository;
@@ -16,9 +17,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository // Esta anotação registra o "bean"
+@Repository
 public class PedidoRepositoryJDBC implements PedidoRepository {
 
+    // ... (Campos e Construtor iguais)
     private JdbcTemplate jdbcTemplate;
     private ClienteRepository clienteRepository;
     private ProdutosRepository produtosRepository; 
@@ -30,10 +32,30 @@ public class PedidoRepositoryJDBC implements PedidoRepository {
         this.produtosRepository = produtosRepository;
     }
 
+    // ... (Métodos findAll, findById, save, etc. iguais) ...
+    // Vou mostrar apenas o método que precisa de correção:
+
+    private List<ItemPedido> findItensByPedidoId(long pedidoId) {
+        String sql = "SELECT * FROM item_pedido WHERE pedido_id = ?";
+        return jdbcTemplate.query(
+            sql,
+            ps -> ps.setLong(1, pedidoId),
+            (rs, rowNum) -> {
+                ItemPedido item = new ItemPedido();
+                // CORREÇÃO AQUI: Usa findById() do JPA
+                item.setItem(produtosRepository.findById(rs.getLong("produto_id")).orElse(null));
+                item.setQuantidade(rs.getInt("quantidade"));
+                return item;
+            }
+        );
+    }
+
+    // ... (Copie o restante dos métodos da sua versão anterior ou eu mando tudo se preferir)
+    // Para economizar espaço, garanta que mapRowToPedido, findAll, findById, save, etc. estejam aqui.
+    
     private Pedido mapRowToPedido(ResultSet rs, int rowNum) throws SQLException {
         long clienteId = rs.getLong("cliente_id");
         Cliente cliente = clienteRepository.findById(clienteId);
-        
         Pedido pedido = new Pedido();
         pedido.setId(rs.getLong("id"));
         pedido.setCliente(cliente);
@@ -43,26 +65,10 @@ public class PedidoRepositoryJDBC implements PedidoRepository {
         pedido.setImpostos(rs.getDouble("impostos"));
         pedido.setDesconto(rs.getDouble("desconto"));
         pedido.setValorCobrado(rs.getDouble("valor_cobrado"));
-        
-        // Carrega os itens do pedido
         pedido.setItens(findItensByPedidoId(pedido.getId()));
         return pedido;
     }
-
-    private List<ItemPedido> findItensByPedidoId(long pedidoId) {
-        String sql = "SELECT * FROM item_pedido WHERE pedido_id = ?";
-        return jdbcTemplate.query(
-            sql,
-            ps -> ps.setLong(1, pedidoId),
-            (rs, rowNum) -> {
-                ItemPedido item = new ItemPedido();
-                item.setItem(produtosRepository.recuperaProdutoPorid(rs.getLong("produto_id")));
-                item.setQuantidade(rs.getInt("quantidade"));
-                return item;
-            }
-        );
-    }
-
+    
     @Override
     public List<Pedido> findAll() {
         String sql = "SELECT * FROM pedidos";
@@ -98,40 +104,16 @@ public class PedidoRepositoryJDBC implements PedidoRepository {
     @Override
     public Pedido save(Pedido pedido) {
         Pedido pedidoExistente = findById(pedido.getId());
-        
         if (pedidoExistente == null) {
-            String sqlPedido = "INSERT INTO pedidos (id, cliente_id, data_hora_pagamento, status, valor, impostos, desconto, valor_cobrado) " +
-                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            jdbcTemplate.update(sqlPedido,
-                pedido.getId(),
-                pedido.getCliente().getId(),
-                pedido.getDataHoraPagamento(),
-                pedido.getStatus().name(),
-                pedido.getValor(),
-                pedido.getImpostos(),
-                pedido.getDesconto(),
-                pedido.getValorCobrado()
-            );
-            
+            String sqlPedido = "INSERT INTO pedidos (id, cliente_id, data_hora_pagamento, status, valor, impostos, desconto, valor_cobrado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            jdbcTemplate.update(sqlPedido, pedido.getId(), pedido.getCliente().getId(), pedido.getDataHoraPagamento(), pedido.getStatus().name(), pedido.getValor(), pedido.getImpostos(), pedido.getDesconto(), pedido.getValorCobrado());
             String sqlItem = "INSERT INTO item_pedido (pedido_id, produto_id, quantidade) VALUES (?, ?, ?)";
             for (ItemPedido item : pedido.getItens()) {
-                jdbcTemplate.update(sqlItem,
-                    pedido.getId(),
-                    item.getItem().getId(),
-                    item.getQuantidade()
-                );
+                jdbcTemplate.update(sqlItem, pedido.getId(), item.getItem().getId(), item.getQuantidade());
             }
         } else {
             String sql = "UPDATE pedidos SET status = ?, valor = ?, impostos = ?, desconto = ?, valor_cobrado = ?, data_hora_pagamento = ? WHERE id = ?";
-            jdbcTemplate.update(sql,
-                pedido.getStatus().name(),
-                pedido.getValor(),
-                pedido.getImpostos(),
-                pedido.getDesconto(),
-                pedido.getValorCobrado(),
-                pedido.getDataHoraPagamento(),
-                pedido.getId()
-            );
+            jdbcTemplate.update(sql, pedido.getStatus().name(), pedido.getValor(), pedido.getImpostos(), pedido.getDesconto(), pedido.getValorCobrado(), pedido.getDataHoraPagamento(), pedido.getId());
         }
         return pedido;
     }

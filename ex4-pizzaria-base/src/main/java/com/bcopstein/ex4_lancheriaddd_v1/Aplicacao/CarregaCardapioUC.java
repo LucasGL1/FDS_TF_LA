@@ -12,23 +12,21 @@ import java.util.stream.Collectors;
 @Component
 public class CarregaCardapioUC {
     private ProdutosRepository produtos;
-    private ConfiguradorCardapio configurador; // <-- NOVA DEPENDÊNCIA
+    private ConfiguradorCardapio configurador;
 
     @Autowired
-    public CarregaCardapioUC(ProdutosRepository produtos, ConfiguradorCardapio configurador) { // <-- DEPENDÊNCIA ADICIONADA
+    public CarregaCardapioUC(ProdutosRepository produtos, ConfiguradorCardapio configurador) {
         this.produtos = produtos;
-        this.configurador = configurador; // <-- DEPENDÊNCIA ADICIONADA
+        this.configurador = configurador;
     }
 
     public List<ProdutoCardapioDTO> run() {
-        // LÓGICA ATUALIZADA
-        // 1. Pega o ID do cardápio que o "master" definiu
-        long cardapioVigenteId = configurador.getIdCardapioAtivo();
+        // 1. Pega o ID que o Master definiu (padrão é 1)
+        long idAtivo = configurador.getIdCardapioAtivo();
         
-        // 2. Busca as Entidades de Produto (com receita) do banco
-        List<Produto> produtosEntidade = produtos.recuperaProdutosCardapio(cardapioVigenteId);
+        // 2. Busca APENAS os produtos desse cardápio
+        List<Produto> produtosEntidade = produtos.findByCardapioId(idAtivo);
 
-        // 3. Converte a lista de Entidades para uma lista de DTOs (sem receita)
         return produtosEntidade.stream()
                 .map(produto -> new ProdutoCardapioDTO(
                         produto.getId(),
